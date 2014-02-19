@@ -6,7 +6,7 @@
 #include <pwd.h>
 #include "SpecFuncs.h"
 #include "HelperFuncs.h"
-
+#define MAX_LINE 80
 
 int main(void)
 {
