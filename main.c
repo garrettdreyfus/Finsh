@@ -61,6 +61,7 @@ int main(void)
         if (searchAndExecuteSpecFunc(inargs)==0){
           //write and wait
           writeToPipe(fd,inargs,MAX_LINE/2 +1);
+          while(wait(NULL)>0);
           wait(NULL);
         }
       }
