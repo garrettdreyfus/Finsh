@@ -10,7 +10,6 @@ typedef int bool;
 #define true 1
 #define false 0
 typedef void (*DoRunTimeChecks)();
-char * slice(char* arr,int begin,int end);
 struct ShellFunc
 {
   char* keyword;

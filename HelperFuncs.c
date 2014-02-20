@@ -18,12 +18,8 @@
 #define MAX_LINE 80
 #define READ_END 0
 #define WRITE_END 1
-void writeargs(char *arr[],char *str);
-void writeToHistory(char *command, char *homedir);
-int argcount(char *str);
-char* removeFirstWord(char *str);
-void prompt();
-//Changes string to array of strings. Always appends NULL
+
+//Takes a Char Array and Writes the words seperated by spaces into an array of strings
 void writeargs(char *arr[],char *str)
 {
   if(argcount(str)!= 0){
@@ -43,7 +39,7 @@ void writeargs(char *arr[],char *str)
   }
 }
 
-// Writes all Calls to History
+// Writes all calls to a history file titled ~/.finshistory
 void writeToHistory(char *command, char *homedir)
 {
   char home[strlen(homedir)+strlen("/.finshistory")];
@@ -60,7 +56,7 @@ void writeToHistory(char *command, char *homedir)
   fclose(f);
 }
 
-//counts the number of args to expect
+//Counts the number of Arguments in a string
 int argcount(char *str)
 {
   int num=0;
@@ -80,36 +76,51 @@ int argcount(char *str)
   return num;
 }
 
-//Prompt Function
-void prompt()
-{
-  printf( RED ">  " RESET);
-}
+//Simple wrapper to write to pipe and close some ends
 void writeToPipe(int pipe[],char *content, int buffer)
 {
   close(pipe[READ_END]);
   write(pipe[WRITE_END], content,buffer);
   close(pipe[WRITE_END]);
 }
+
+//Simple wrapper to read from pipe and close some ends
 void readFromPipe(int pipe[],char *content, int buffer)
 {
   close(pipe[WRITE_END]);
   read(pipe[READ_END],content,buffer);
   close(pipe[READ_END]);
 }
+
+//Takes in a char array reads input with readline and copies it to the input
 void getInput(char *inargs)
 {
   rl_bind_key('\t', rl_complete);
   static char *inputstring = (char *)NULL;
   inputstring= readline (RED ">" RESET);
-  if (inputstring && *inputstring){
+  fflush(stdout);
+  fflush(stdin);
+  if(inputstring && *inputstring){
     strcpy(inargs,inputstring);
+    clearArray(inputstring);
   }
-  else{
-    getInput(inargs);
-  }
-  //if(argcount(inputstring)==0) getInput(inputstring);
 }
+
+//Gets the index of the ampersand primarily used for background processes
+int ampersandLast(char *str)
+{
+  int i;
+  for(i=strlen(str)-1;i>0;i--)
+  {
+    if(str[i] == '&')
+    {
+        return i;
+    }
+  }
+  return 0;
+}
+
+//Clears array by writing all contents to 0
 void clearArray(char *inarr)
 {
   memset(inarr, 0, sizeof strlen(inarr));
@@ -122,6 +133,10 @@ void copyArr(char *arr1, char *arr2)
     arr2[i]=arr1[i];
   }
 }
+
+//Reads the command and checks it against its array of known special functions.
+//i.e. those like cd which are not actual binaries and must be executed by the parent
+//returns 0 if it is not a special function
 int searchAndExecuteSpecFunc(char *input)
 {
   char copy[strlen(input)];

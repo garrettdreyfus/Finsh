@@ -7,9 +7,10 @@
 #include <wordexp.h>
 #include "SpecFuncs.h"
 #include "HelperFuncs.h"
-
 #define true 1
 #define false 0
+
+//Simple Function that uses wordexp to expand the given path and changes to that directory
 void cdFunc(char * args[]){
   char* path = args[1];
   wordexp_t exp_result;
@@ -21,15 +22,21 @@ void cdFunc(char * args[]){
   }
   wordfree(&exp_result);
 }
+
+//exits the program
 void exitFunc()
 {
   exit(0);
 }
+
+//List of known Special functions. Those that must be run by the parent
 struct ShellFunc shell_funcs[NUMBER_OF_FUNCS] = {
   {"cd",cdFunc},
   {"exit",exitFunc},
 };
 
+//determines if the command is a special function
+//returns the index of the SpecFunc
 int searchStructs(char* key,struct ShellFunc* funcs)
 {
   int i;
@@ -46,23 +53,14 @@ int searchStructs(char* key,struct ShellFunc* funcs)
   }
   return -1;
 }
+
+//apends char to end of string
 void append(char* s,  char c)
 {
         int len = strlen(s);
         s[len] = c;
         s[len+1] = '\0';
 }
-char * slice(char* arr,int begin,int end)
-{
-  char *newarr;
-  int i;
-  int counter;
-  counter =0;
-  for(i=begin;i<=end;i++){
-    newarr[counter]=arr[i];
-    counter ++;
-  }
-  return newarr;
-}
+
 
 

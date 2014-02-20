@@ -31,5 +31,6 @@ void getInput(char *inargs);
 void clearArray(char *inarr);
 void copyArr(char *arr1, char *arr2);
 int searchAndExecuteSpecFunc(char *input);
+int ampersandLast(char *str);
 
 
