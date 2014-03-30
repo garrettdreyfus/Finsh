@@ -1,9 +1,9 @@
 Finsh
 ----------
-Fin-sh is a very simple shell written in C. It is my second c program ever written so expect memory leaks and the like.
+Fin-sh is a very simple shell written in C.
 
 #Instructions
-requires gnu readline which can be easily installed with sudo apt-get install libreadline6 libreadline6-dev
+requires gnu readline which comes does not come pre installed in osx but can be installed with brew. brew install readline.
 clone and
 `make`
 
