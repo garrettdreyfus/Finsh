@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <pwd.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -10,7 +11,6 @@
 #include "HelperFuncs.h"
 #define MAX_LINE 80
 pid_t pid;
-
 //Function to Kill Child Process
 void killprocess()
 {
@@ -18,6 +18,7 @@ void killprocess()
 }
 int main(void)
 {
+  read_history("~/.finshistory");
   //get current directory
   struct passwd *pw = getpwuid(getuid());
   char *homedir = pw->pw_dir;
@@ -30,7 +31,6 @@ int main(void)
   //empty inargs 
   for(i=0;i<MAX_LINE/2 +1;i++) inargs[i]=' ';
   int fd[2];
-  int status;
   while (true){
     //open pipe
     if(pipe(fd)== -1){
@@ -38,6 +38,7 @@ int main(void)
       return 1;
     }
     //fork process
+    int status;
     pid = fork();
     if(pid>0){ //Parent Process
       clearArray(inargs);
@@ -46,7 +47,6 @@ int main(void)
         getInput(inargs);
       }
       //write the command to history
-      writeToHistory(inargs,homedir);
       int ampersand = ampersandLast(inargs);
       //if there is an ampersand
       if(ampersand !=0){
@@ -61,8 +61,7 @@ int main(void)
         if (searchAndExecuteSpecFunc(inargs)==0){
           //write and wait
           writeToPipe(fd,inargs,MAX_LINE/2 +1);
-          while(wait(NULL)>0);
-          wait(NULL);
+          waitpid(pid, NULL, 0);
         }
       }
     }
@@ -80,7 +79,7 @@ int main(void)
       execvp(command,args);
       //command failed continue
       printf("Command not found:  %s\n", command);
-      return 0;
+      return 1;
     }
   }
   return 0;

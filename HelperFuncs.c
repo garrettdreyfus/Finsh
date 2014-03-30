@@ -95,14 +95,15 @@ void readFromPipe(int pipe[],char *content, int buffer)
 //Takes in a char array reads input with readline and copies it to the input
 void getInput(char *inargs)
 {
+  clearArray(inargs);
   rl_bind_key('\t', rl_complete);
   static char *inputstring = (char *)NULL;
   inputstring= readline (RED ">" RESET);
-  fflush(stdout);
-  fflush(stdin);
   if(inputstring && *inputstring){
+    add_history(inputstring);
     strcpy(inargs,inputstring);
-    clearArray(inputstring);
+    free (inputstring);
+    inputstring = (char *)NULL;
   }
 }
 
