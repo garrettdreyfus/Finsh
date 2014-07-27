@@ -62,7 +62,8 @@ int argcount(char *str)
   int num=0;
   bool flag=false;
   str[strlen(str)]=' ';
-  for(int i =0; i < strlen(str); i++)
+  int i;
+  for(i =0; i < strlen(str); i++)
   {
     if(str[i] != ' ' )
     {
